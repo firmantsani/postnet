@@ -12,7 +12,7 @@ export default function Home() {
     setData(json);
   };
 
-  // Ambil array transaksi
+  // Ambil array transaksi (ganti jika array-nya beda)
   const transaksi = data?.KumpulanBarangJual?.DaftarBarangJual || [];
 
   // Hitung total
@@ -20,11 +20,17 @@ export default function Home() {
   const totalQty = transaksi.reduce((sum: number, item: any) => sum + (item.Qty || 0), 0);
 
   return (
-    <div style={{ padding: 24, fontFamily: 'Arial, sans-serif', background: '#f6f8fa', minHeight: '100vh' }}>
+    <div style={{
+      padding: 24,
+      fontFamily: 'Arial, sans-serif',
+      background: '#f6f8fa',
+      minHeight: '100vh',
+      color: '#222'
+    }}>
       <h2 style={{ color: '#1976d2' }}>Upload File POS JSON</h2>
       <input type="file" accept=".json,.*" onChange={handleFile} style={{ marginBottom: 24 }} />
 
-      {transaksi.length > 0 && (
+      {transaksi.length > 0 ? (
         <div>
           <h3 style={{ color: '#1976d2' }}>Daftar Transaksi</h3>
           <table style={{
@@ -55,7 +61,7 @@ export default function Home() {
                 </tr>
               ))}
               {/* Baris total di bawah */}
-              <tr style={{ background: '#e3f2fd', fontWeight: 'bold' }}>
+              <tr style={{ background: '#e3f2fd', fontWeight: 'bold', color: '#1976d2' }}>
                 <td colSpan={3} style={{ padding: 8, textAlign: 'right' }}>TOTAL</td>
                 <td style={{ padding: 8 }}>{totalQty}</td>
                 <td style={{ padding: 8 }}></td>
@@ -64,24 +70,9 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-      )}
-
-      {/* Summary */}
-      {data && (
-        <div style={{
-          marginTop: 32,
-          background: '#e3f2fd',
-          padding: 16,
-          borderRadius: 8,
-          maxWidth: 400
-        }}>
-          <h4 style={{ color: '#1976d2' }}>Summary</h4>
-          <div>Total Belanja: <b>Rp {data.TotalGrossRpBarangJual?.toLocaleString()}</b></div>
-          <div>Total Tunai: <b>Rp {data.TotalDibayarRpTunai?.toLocaleString()}</b></div>
-          <div>Total Non Tunai: <b>Rp {data.TotalDibayarRpNonTunai?.toLocaleString()}</b></div>
-          <div>Total Voucher: <b>Rp {data.TotalDibayarRpVoucher?.toLocaleString()}</b></div>
-          <div>Total Kembalian: <b>Rp {data.TotalKembalianRp?.toLocaleString()}</b></div>
-          <div>Kas: <b>Rp {(data.TotalDibayarRpTunai - data.TotalKembalianRp)?.toLocaleString()}</b></div>
+      ) : (
+        <div style={{ color: '#d32f2f', marginTop: 24 }}>
+          Tidak ada data transaksi ditemukan di file ini.
         </div>
       )}
     </div>
