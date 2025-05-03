@@ -1,82 +1,78 @@
 'use client';
 import React, { useState } from 'react';
 
-type Summary = {
-  totalBelanja: number;
-  totalTunai: number;
-  totalNonTunai: number;
-  totalVoucher: number;
-  totalKembalian: number;
-  kas: number;
-};
-
 export default function Home() {
   const [data, setData] = useState<any>(null);
-  const [summary, setSummary] = useState<Summary | null>(null);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const text = await file.text();
     const json = JSON.parse(text);
-
-    // Parsing sesuai struktur file JSON Anda
-    const totalBelanja = json.TotalGrossRpBarangJual || 0;
-    const totalTunai = json.TotalDibayarRpTunai || 0;
-    const totalNonTunai = json.TotalDibayarRpNonTunai || 0;
-    const totalVoucher = json.TotalDibayarRpVoucher || 0;
-    const totalKembalian = json.TotalKembalianRp || 0;
-    const kas = totalTunai - totalKembalian;
-
     setData(json);
-    setSummary({
-      totalBelanja,
-      totalTunai,
-      totalNonTunai,
-      totalVoucher,
-      totalKembalian,
-      kas,
-    });
   };
 
+  // Ambil array transaksi
+  const transaksi = data?.KumpulanBarangJual?.DaftarBarangJual || [];
+
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Upload File POS JSON</h2>
-      <input type="file" accept=".json,.*" onChange={handleFile} />
-      {summary && (
-        <div style={{ marginTop: 24 }}>
-          <h3>Summary</h3>
-          <table border={1} cellPadding={8}>
+    <div style={{ padding: 24, fontFamily: 'Arial, sans-serif', background: '#f6f8fa', minHeight: '100vh' }}>
+      <h2 style={{ color: '#1976d2' }}>Upload File POS JSON</h2>
+      <input type="file" accept=".json,.*" onChange={handleFile} style={{ marginBottom: 24 }} />
+
+      {transaksi.length > 0 && (
+        <div>
+          <h3 style={{ color: '#1976d2' }}>Daftar Transaksi</h3>
+          <table style={{
+            borderCollapse: 'collapse',
+            width: '100%',
+            background: '#fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+          }}>
+            <thead>
+              <tr style={{ background: '#1976d2', color: '#fff' }}>
+                <th style={{ padding: 8 }}>No</th>
+                <th style={{ padding: 8 }}>PLU</th>
+                <th style={{ padding: 8 }}>Nama Barang</th>
+                <th style={{ padding: 8 }}>Qty</th>
+                <th style={{ padding: 8 }}>Harga Jual</th>
+                <th style={{ padding: 8 }}>Gross</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr>
-                <td>Total Belanja</td>
-                <td>Rp {summary.totalBelanja.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Total Tunai</td>
-                <td>Rp {summary.totalTunai.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Total Non Tunai</td>
-                <td>Rp {summary.totalNonTunai.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Total Voucher</td>
-                <td>Rp {summary.totalVoucher.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Total Kembalian</td>
-                <td>Rp {summary.totalKembalian.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Kas</td>
-                <td>Rp {summary.kas.toLocaleString()}</td>
-              </tr>
+              {transaksi.map((item: any, idx: number) => (
+                <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: 8 }}>{idx + 1}</td>
+                  <td style={{ padding: 8 }}>{item.PLU}</td>
+                  <td style={{ padding: 8 }}>{item.Singkatan || item.Desc2}</td>
+                  <td style={{ padding: 8 }}>{item.Qty}</td>
+                  <td style={{ padding: 8 }}>Rp {item.HargaJualRp?.toLocaleString()}</td>
+                  <td style={{ padding: 8 }}>Rp {item.GrossRp?.toLocaleString()}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       )}
-      {/* Tampilkan detail transaksi jika perlu */}
+
+      {/* Summary */}
+      {data && (
+        <div style={{
+          marginTop: 32,
+          background: '#e3f2fd',
+          padding: 16,
+          borderRadius: 8,
+          maxWidth: 400
+        }}>
+          <h4 style={{ color: '#1976d2' }}>Summary</h4>
+          <div>Total Belanja: <b>Rp {data.TotalGrossRpBarangJual?.toLocaleString()}</b></div>
+          <div>Total Tunai: <b>Rp {data.TotalDibayarRpTunai?.toLocaleString()}</b></div>
+          <div>Total Non Tunai: <b>Rp {data.TotalDibayarRpNonTunai?.toLocaleString()}</b></div>
+          <div>Total Voucher: <b>Rp {data.TotalDibayarRpVoucher?.toLocaleString()}</b></div>
+          <div>Total Kembalian: <b>Rp {data.TotalKembalianRp?.toLocaleString()}</b></div>
+          <div>Kas: <b>Rp {(data.TotalDibayarRpTunai - data.TotalKembalianRp)?.toLocaleString()}</b></div>
+        </div>
+      )}
     </div>
   );
 }
