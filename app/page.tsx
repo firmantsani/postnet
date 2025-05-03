@@ -15,6 +15,10 @@ export default function Home() {
   // Ambil array transaksi
   const transaksi = data?.KumpulanBarangJual?.DaftarBarangJual || [];
 
+  // Hitung total
+  const totalBelanja = transaksi.reduce((sum: number, item: any) => sum + (item.GrossRp || 0), 0);
+  const totalQty = transaksi.reduce((sum: number, item: any) => sum + (item.Qty || 0), 0);
+
   return (
     <div style={{ padding: 24, fontFamily: 'Arial, sans-serif', background: '#f6f8fa', minHeight: '100vh' }}>
       <h2 style={{ color: '#1976d2' }}>Upload File POS JSON</h2>
@@ -50,6 +54,13 @@ export default function Home() {
                   <td style={{ padding: 8 }}>Rp {item.GrossRp?.toLocaleString()}</td>
                 </tr>
               ))}
+              {/* Baris total di bawah */}
+              <tr style={{ background: '#e3f2fd', fontWeight: 'bold' }}>
+                <td colSpan={3} style={{ padding: 8, textAlign: 'right' }}>TOTAL</td>
+                <td style={{ padding: 8 }}>{totalQty}</td>
+                <td style={{ padding: 8 }}></td>
+                <td style={{ padding: 8 }}>Rp {totalBelanja.toLocaleString()}</td>
+              </tr>
             </tbody>
           </table>
         </div>
