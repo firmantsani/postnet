@@ -40,7 +40,7 @@ export default function Home() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
           }}>
             <thead>
-              <tr style={{ background: '#1976d2', color: '#fff' }}>
+              <tr style={{ background: '#1976d2', color: '#000' }}>
                 <th style={{ padding: 8 }}>No</th>
                 <th style={{ padding: 8 }}>PLU</th>
                 <th style={{ padding: 8 }}>Nama Barang</th>
